@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YOUdidIT</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">TACTICAL GRID / RUN 01</p>
+        <h1>YOUdidIT</h1>
+      </div>
+
+      <button id="helpButton" class="button button-secondary">
+        Anleitung
+      </button>
+    </header>
+
+    <section class="game-layout">
+      <aside class="panel status-panel">
+        <div class="panel-heading">
+          <span class="panel-kicker">Einsatzstatus</span>
+          <span id="roundLabel" class="round-label">Runde 1</span>
+        </div>
+
+        <div class="level-display">
+          <span class="level-caption">Sektor</span>
+          <strong id="level">1</strong>
+        </div>
+
+        <div class="resource">
+          <div class="resource-label">
+            <span>Leben</span>
+            <strong id="healthText">10 / 10</strong>
+          </div>
+          <div class="meter">
+            <div id="healthBar" class="meter-fill health-fill"></div>
+          </div>
+        </div>
+
+        <div class="resource">
+          <div class="resource-label">
+            <span>Mana</span>
+            <strong id="manaText">5 / 5</strong>
+          </div>
+          <div class="meter">
+            <div id="manaBar" class="meter-fill mana-fill"></div>
+          </div>
+        </div>
+
+        <div class="action-grid">
+          <div class="action-card">
+            <span>Bewegung frei</span>
+            <strong id="moves">2</strong>
+          </div>
+          <div class="action-card">
+            <span>Aktionen frei</span>
+            <strong id="attacks">3</strong>
+          </div>
+        </div>
+
+        <button id="endTurnButton" class="button button-primary">
+          Gegnerzug erzwingen
+        </button>
+
+        <div class="log-panel">
+          <div class="panel-heading compact">
+            <span class="panel-kicker">Einsatzprotokoll</span>
+          </div>
+          <div id="eventLog" class="event-log"></div>
+        </div>
+      </aside>
+
+      <section class="board-section">
+        <div class="board-header">
+          <div>
+            <p class="eyebrow">Mission</p>
+            <h2>Erreiche den Ausgang</h2>
+          </div>
+          <div class="objective">
+            <span class="objective-dot"></span>
+            Zielzone
+          </div>
+        </div>
+
+        <div id="grid" class="grid" aria-label="Spielfeld"></div>
+
+        <div id="gameMessage" class="game-message" aria-live="polite"></div>
+
+        <div class="controls-hint">
+          <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> oder Pfeiltasten bewegen</span>
+          <span><kbd>Leertaste</kbd> angreifen</span>
+          <span><kbd>R</kbd> Neustart</span>
+        </div>
+      </section>
+
+      <aside class="panel skill-panel">
+        <div class="panel-heading">
+          <span class="panel-kicker">Entwicklung</span>
+          <strong><span id="skillPoints">0</span> SP</strong>
+        </div>
+
+        <p class="panel-description">
+          Schalte Fähigkeiten dauerhaft frei. Fähigkeiten mit einem Blitz können während einer Aktion aktiviert werden.
+        </p>
+
+        <div id="skillTree" class="skill-tree"></div>
+
+        <button id="restartButton" class="button button-secondary full-width">
+          Run neu starten
+        </button>
+      </aside>
+    </section>
+  </main>
+
+  <dialog id="helpDialog" class="help-dialog">
+    <div class="dialog-header">
+      <div>
+        <p class="eyebrow">Spielhandbuch</p>
+        <h2>Anleitung</h2>
+      </div>
+      <button id="closeHelpButton" class="close-button" aria-label="Anleitung schliessen">X</button>
+    </div>
+
+    <div class="guide-grid">
+      <article>
+        <h3>Deine Aufgabe:</h3>
+        <p>
+          Hi. Deine Aufgabe ist es den Spieler 🧍 zum Ziel 🏁 zu bringen. Es ist ein rundenbasiertes Spiel. 
+          Führe deine Aktionen aus, danach sind die Gegner dran. Du musst nicht alle Gegner besiegen, einfach ins Ziel kommen. 
+          Sobald du das Ziel erreicht hast, kommst du in den nächsten Sektor und musst wieder ins Ziel kommen. 
+          Es werden immer mehr Gegner.
+        </p>
+      </article>
+
+      <article>
+        <h3>Aktionen pro Runde</h3>
+        <p>
+          Du hast 3 Aktionen pro Runde zur Verfügung. (Diese können mit "Aktionsreserve" auf 4 erweitert werden).
+          Mit den 3 Aktionen kannst du dich 2x bewegen. (mit "Leichtflüssig" auf 3 erweiterbar).
+          Angreifen kannst du so oft du willst. Dein Angriff ist zufällig von 4-10 Schaden.
+          Die Gegner müssen genug nahe bei dir sein, um dir Schaden zuzufügen.
+        </p>
+      </article>
+
+      <article>
+        <h3>Gegnerübersicht</h3>
+        <ul class="guide-list">
+          <li><strong>🦠 Virus</strong> (Standardgegner) – 7 LP, 3–5 Schaden, 1 Bewegung, 1 Angriff.</li>
+          <li><strong>⚔️ Schwertkämpfer</strong> – 16 LP, 1–2 Schaden, 1 Bewegung, 2 Angriffe pro Runde.</li>
+          <li><strong>🏃 Runner</strong> – 10 LP, 7–8 Schaden, 2 Bewegungen, 1 Angriff.</li>
+          <li><strong>🛡️ Schild</strong> – 18 LP, 3–4 Schaden, 1 Bewegung, 1 Angriff. Erhält von deinen Angriffen generell 2 Schaden weniger.</li>
+          <li><strong>🕸️ Spawner</strong> – 1 LP, 0 Schaden, bewegt sich nicht. Erschafft jede Runde einen neuen Virus in seiner Nähe. Neu erschaffene Viren stehen 1 Runde still, bevor sie sich bewegen.</li>
+          <li><strong>✚ Heiler</strong> – 12 LP, 1–2 Schaden, 1 Bewegung, 1 Angriff. Heilt jede Runde alle Gegner um 4 LP – mehrere Heiler addieren sich (3 Heiler = 12 LP).</li>
+          <li><strong>👻 Geist</strong> – 10 LP, 7–8 Schaden, 2 Bewegungen, 1 Angriff. Kann durch Wände laufen.</li>
+          <li><strong>🌀 Teleporter</strong> – 7 LP, 9–10 Schaden, 1 Bewegung, 1 Angriff. Teleportiert sich zufällig, wenn er dich nicht trifft.</li>
+          <li><strong>🏹 Bogner</strong> – 11 LP, 3–7 Schaden, 1 Bewegung, 1 Angriff. Kann auch schiessen, wenn noch ein freies Feld zwischen ihm und dir liegt (Reichweite 2), ohne sich auf dein Feld bewegen zu müssen.</li>
+          <li><strong>👹 Boss</strong> – 30 LP, 4–7 Schaden, 1 Bewegung, 1 Angriff. Besonders viel Leben.</li>
+        </ul>
+      </article>
+
+      <article>
+        <h3>Mana</h3>
+        <p>
+          Am Anfang hast du 5/5 Mana. (Mit Manamana auf 10/10).
+          Wenn dein Mana nicht voll ist, erhältst du 1 Mana pro Runde zurück. (Mit Manaregen 2 pro runde zurück).
+          Kosten von Entwicklungen: - Einsetzen von Kraftschlag kostet 3 Mana, - Einsetzen von Winkelklinge kostet 2 Mana
+        </p>
+
+      <article>
+        <h3>Sektoren und Karte</h3>
+        <p>
+          Nachdem du einen Sektor abgeschlossen hast, kommt 1 Gegner mehr. Welche Gegner kommen und wo sie starten ist zufällig. 
+          Die Karte wird bis zu 12x12 gross, aber Gegner werden trotzdem immer mehr.
+        </p>
+
+      <article>
+        <h3>Steuerung und Skillpunkte</h3>
+        <ul class="guide-list">
+          <li><strong>WASD / Pfeiltasten:</strong> bewegen</li>
+          <li><strong>Leertaste:</strong> angreifen</li>
+          <li><strong>Q:</strong> Kraftschlag vorbereiten</li>
+          <li><strong>E:</strong> Winkelklinge vorbereiten</li>
+          <li><strong>R:</strong> Run neu starten</li>
+          <li>Du erhältst <strong>1 SP</strong> für jeden abgeschlossenen Sektor.</li>
+          <li>Wenn du das hier liest, hast du vermutlich die Anleitung durchgelesen. Danke fürs Lesen und Viel Spass 😊</li>
+        </ul>
+      </article>
+    </div>
+  </dialog>
+
+  <script src="game.js"></script>
+</body>
+</html>
